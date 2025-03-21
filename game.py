@@ -11,7 +11,6 @@ canvas = pygame.display.set_mode((500,500))
 # TITLE OF CANVAS 
 pygame.display.set_caption("Show Image") 
 
-image = pygame.image.load("Marek.jpg") 
 exit = False
 
 while not exit: 
