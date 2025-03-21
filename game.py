@@ -1,25 +1,23 @@
 import pygame
+from typing import *
+from sys import exit
+import numpy as np
 
-pygame.init() 
+pygame.init()
+screen = pygame.display.set_mode((800, 400))
+pygame.display.set_caption("Runner")
+clock = pygame.time.Clock()
 
-color = (255,255,255) 
-rect_color = (255,0,0) 
+test_surface = pygame.Surface((100, 200))
+test_surface.fill("Red")
 
-# CREATING CANVAS 
-canvas = pygame.display.set_mode((500,500)) 
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+    
+    screen.blit(test_surface, (0,0))
 
-# TITLE OF CANVAS 
-pygame.display.set_caption("Show Image") 
-
-exit = False
-
-while not exit: 
-	canvas.fill(color) 
-	for event in pygame.event.get(): 
-		if event.type == pygame.QUIT: 
-			exit = True
-
-	pygame.draw.rect(canvas, rect_color, 
-					pygame.Rect(30,30,60,60)) 
-	pygame.display.update() 
-
+    pygame.display.update()
+    clock.tick(60)
