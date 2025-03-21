@@ -1,4 +1,5 @@
 import pygame
+import utils
 
 pygame.init() 
 
@@ -22,4 +23,5 @@ while not exit:
 	pygame.draw.rect(canvas, rect_color, 
 					pygame.Rect(30,30,60,60)) 
 	pygame.display.update() 
+	print(utils.getDirection())
 
