@@ -1,10 +1,11 @@
 import pygame
 from sys import exit
 from character import Character
+from cyborg import Cyborg
 
 class Main:
     def __init__(self):
-        self.player1 = Character(
+        self.player1 = Cyborg(
             "Charlie", 100, "graphics/cyborg/cyborg_base.png"
         ) 
 
