@@ -31,6 +31,8 @@ class Character(pygame.sprite.Sprite):
         self.combo_timer = 0
         self.combo_time_limit = 1000
 
+        # self.combo_thresholds = {3: self.combo1, 5: self.combo2}
+
     # make it move, given array of keys
     def move(self, direction):
         self.rect = self.rect.move(direction, 0)
