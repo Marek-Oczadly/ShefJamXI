@@ -23,13 +23,19 @@ class Main:
         
 
         while True:
+            screen.blit(ground_surface,(0,300))
+            screen.blit(sky_surface, (0,0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
 
             keys = pygame.key.get_pressed()
-            self.player1.update(screen, keys)
+
+            self.player1.update(keys)
+            screen.blit(self.player1.getImg(), self.player1.getRect())
+
+
             pygame.display.update()
             clock.tick(60)
 
