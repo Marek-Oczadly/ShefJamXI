@@ -12,7 +12,7 @@ class Main:
 
         # Set initial positions
         self.player1.rect.bottomleft = (10, 300)  # Left side of the screen
-        self.player2.rect.bottomleft = (550, 300)  # Right side of the screen
+        self.player2.rect.bottomleft = (550, 345)  # Right side of the screen
 
     def run(self):
         pygame.init()

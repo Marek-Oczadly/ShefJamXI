@@ -72,12 +72,18 @@ class Character(pygame.sprite.Sprite):
 
         self.attacking = False
 
-        self.setRect("graphics/cyborg/cyborg_base.png")
+        if self.player_name == "Charlie":
+            self.setRect("graphics/cyborg/cyborg_base.png")
+        elif self.player_name == "Lily":
+            self.setRect("graphics/two_face/two_face_base.png")
 
     def setRect(self, new_file: str):
         current_pos = self.rect.topleft  # Save the current position
         self.image = pygame.image.load(new_file).convert_alpha()
-        self.image = pygame.transform.scale_by(self.image, 0.25)
+        if self.player_name == "player1":
+            self.image = pygame.transform.scale_by(self.image, 0.25)
+        if self.player_name == "player2":
+            self.image = pygame.transform.scale_by(self.image, 0.8)
         self.rect = self.image.get_rect()  # Get the new rect
         self.rect.topleft = current_pos  # Restore the original position
         
