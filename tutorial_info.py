@@ -21,7 +21,7 @@ pygame.display.set_icon(icon)
 background = pygame.image.load("graphics/space-background.png")
 
 #ADDING IMAGES INTO GAME WINDOW
-#Player
+#PLAYER
 playerImg = pygame.image.load("graphics/space-player.png")
 playerX = 670 #x-coord of image
 playerY = 380 #y-coord of image
@@ -31,7 +31,7 @@ playerY_change = 0
 def player(x,y):
     screen.blit(playerImg, (x, y)) #draws loaded image on screen
 
-#Enemy
+#ENEMY
 enemyImg = pygame.image.load("graphics/space-enemy.png")
 enemyX = random.randint(0, 736) #enemy spawns at random points in game window
 enemyY = random.randint(0, 536) 
@@ -40,6 +40,20 @@ enemyY_change = 4
 
 def enemy(x,y):
     screen.blit(enemyImg, (x,y))
+
+#SHURIKEN
+# "ready" - shuriken cannot be seen on screen
+# "fire" - shuriken is currently moving
+shurikenImg = pygame.image.load("graphics/shuriken.png")
+shurikenX = playerX
+shurikenY = playerY
+shurikenX_change = 10
+shuriken_state = "ready"; 
+
+def fire_shuriken(x,y):
+    global shuriken_state #global lets variable be accessed within method
+    shuriken_state = "fire"
+    screen.blit(shurikenImg, (x + 10, y + 26))
 
 #CREATING THE GAME LOOP - ensures game doesnt close until close button is pressed
 running = True
@@ -63,6 +77,8 @@ while running:
                 playerY_change = -5
             elif event.key == pygame.K_DOWN:
                 playerY_change = 5
+            elif event.key == pygame.K_SPACE:
+                fire_shuriken(shurikenX, shurikenY)
         if event.type == pygame.KEYUP: #keypress released
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 playerX_change = 0
@@ -91,6 +107,15 @@ while running:
         enemyY_change = 4
     elif enemyY >= 536:
         enemyY_change = -4
+
+    #SHURIKEN MOVEMENT
+    if shuriken_state == "fire":
+        print("plX" + str(playerX))
+        print("plY" + str(playerY))
+        print("shX" + str(shurikenX))
+        print("shY" + str(shurikenY))
+        fire_shuriken(shurikenX, shurikenY)
+        shurikenX -= shurikenX_change 
     
     player(playerX, playerY) 
     enemy(enemyX, enemyY)
