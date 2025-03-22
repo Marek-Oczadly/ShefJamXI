@@ -17,6 +17,7 @@ class Character(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.player_name = player_name
         self.max_hp = max_hp
+        self.jump_frame = None
 
     # make it move, given array of keys
     def move(self, direction):
@@ -28,7 +29,7 @@ class Character(pygame.sprite.Sprite):
     
     # make it jump, given array of keys
     def jump(self):
-        self.rect.move(0, jump(10, self.jump_frame))
+        self.rect = self.rect.move(0, jump(10, self.jump_frame))
         self.jump_frame += 1
         
     def end_jump(self):
