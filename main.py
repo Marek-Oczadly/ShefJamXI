@@ -21,6 +21,7 @@ class Main:
 
         screen.blit(ground_surface,(0,300))
         screen.blit(sky_surface, (0,0))
+        
 
         while True:
             screen.blit(ground_surface,(0,300))
