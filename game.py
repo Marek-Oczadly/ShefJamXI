@@ -1,5 +1,7 @@
 import pygame
+from typing import *
 from sys import exit
+import numpy as np
 
 pygame.init()
 screen = pygame.display.set_mode((800, 400))
@@ -35,4 +37,3 @@ while True:
 
     pygame.display.update()
     clock.tick(60)
-
