@@ -9,7 +9,7 @@ def jump(initial_v: float, frame: int, gravity: float = -5.5, frame_rate: int = 
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, player_name: str, max_hp: int, height: int, width: int, base_image: str):
+    def __init__(self, player_name: str, max_hp: int, base_image: str):
         pygame.sprite.Sprite.__init__(self) 
   
         self.image = pygame.image.load(base_image)
@@ -18,16 +18,26 @@ class Character(pygame.sprite.Sprite):
         self.max_hp = max_hp
 
     # make it move, given array of keys
-    def move(keys):
-        pass
+    def move(self, direction):
+        self.rect.move(direction, 0)
 
     # make it jump, given array of keys
-    def jump(keys):
+    def jump(self, keys):
         pass
 
     # first combo, should be defined in subclass
-    def combo1(keys):
+    def combo1(self, keys):
         pass
 
-if __name__ == "__main__":
-    
+    def setRect(self, new_file: str):
+        self.image = pygame.image.load(new_file).convert_alpha()
+        self.rect = self.image.get_rect()
+
+    def update(self, screen, keys):
+
+        if keys[pygame.K_s]:
+            self.move(5)
+        self.load(screen)
+
+    def load(self, screen):
+        screen.blit(self.image, self.rect)

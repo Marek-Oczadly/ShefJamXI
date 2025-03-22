@@ -1,11 +1,13 @@
 import pygame
 from sys import exit
+from character import Character
 
 class Main:
     def __init__(self):
-        self.player1 = Cyborg()
-        self.player2 = Playboi()
-        pass
+        self.player1 = Character(
+            "Charlie", 100, "graphics/cyborg/cyborg_base.png"
+        ) 
+
 
     def run(self):
         pygame.init()
@@ -27,8 +29,7 @@ class Main:
 
             keys = pygame.key.get_pressed()
 
-            result_p1 = self.player1.update(keys)
-            result_p2 = self.player2.update(keys)
+            self.player1.update(screen, keys)
 
             pygame.display.update()
             clock.tick(60)
