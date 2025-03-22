@@ -28,13 +28,15 @@ class Main:
             screen.blit(ground_surface, (0, 300))
             screen.blit(sky_surface, (0, 0))
 
+            current_time = pygame.time.get_ticks()
+
             pygame.draw.rect(screen, "Grey", (30, 10, 200, 30))
             # Draw foreground (e.g., green for health)
             pygame.draw.rect(screen, "Green", (30, 10, self.player1.getHealth()*2, 30))
 
             pygame.draw.rect(screen, "Grey", (570, 10, 200, 30))
             # Draw foreground (e.g., green for health)
-            pygame.draw.rect(screen, "Green", (570, 10, self.player1.getHealth()*2, 30))
+            pygame.draw.rect(screen, "Green", (570, 10, self.player2.getHealth()*2, 30))
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -52,12 +54,10 @@ class Main:
             screen.blit(self.player2.getImg(), self.player2.getRect())
 
             if self.player1.attacking and self.player1.check_collision(self.player2):
-                self.player1.apply_damage(self.player2, 10)  # Player 2 takes 10 damage
-                print(self.player2.hp)
+                self.player1.apply_damage(self.player2, 10, current_time)  # Player 2 takes 10 damage
 
             if self.player2.attacking and self.player2.check_collision(self.player1):
-                self.player1.apply_damage(self.player1, 10)
-                self.player1.hp -= 10  # Reduce Player 1's health by 10
+                self.player1.apply_damage(self.player1, 10, current_time)
 
             self.player1.draw_attack_hitbox(screen)
             self.player2.draw_attack_hitbox(screen)

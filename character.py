@@ -169,13 +169,11 @@ class Character(pygame.sprite.Sprite):
     def check_collision(self, opponent):
         attack_rect = self.get_attack_rect()
         if attack_rect and attack_rect.colliderect(opponent.rect):  # Check for overlap
-            print("player hit!")
             return True
         return False
     
-    def apply_damage(self, opponent, damage_amount):
-        current_time = pygame.time.get_ticks()
-        if current_time - self.last_hit_time > 300:  # 300ms cooldown
+    def apply_damage(self, opponent, damage_amount, current_time):
+        if current_time - self.last_hit_time > 3000:  # 3s cooldown
             opponent.hp -= damage_amount
             self.last_hit_time = current_time
 
