@@ -2,7 +2,7 @@ import pygame
 from typing import *
 
 
-def jump(initial_v: float, frame: int, gravity: float = -7, frame_rate: int = 60, pixels_per_meter: int = 200) -> float :
+def jump(initial_v: float, frame: int, gravity: float = -8, frame_rate: int = 60, pixels_per_meter: int = 200) -> float :
     gravity_new_units = (gravity * pixels_per_meter) / (frame_rate * frame_rate)
     v = initial_v + gravity_new_units * frame
     return v
@@ -54,6 +54,8 @@ class Character(pygame.sprite.Sprite):
         return self.rect.bottom >= 300
 
     def update(self, keys):
+        if self.rect.bottom > 300:
+            self.rect.move(0, self.rect.bottom - 299)
 
         if keys[pygame.K_a]:
             self.move(-5)
