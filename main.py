@@ -8,7 +8,7 @@ class Main:
     def __init__(self):
         # Initialize Player 1 (Cyborg) and Player 2 (Two-Face)
         self.player1 = Cyborg("Cyborg", 100, "graphics/cyborg/cyborg_base.png")
-        self.player2 = Cyborg("Two-Face", 100, "graphics/cyborg/cyborg_base.png")
+        self.player2 = TwoFace("Two-Face", 100, "graphics/two_face/two_face_base.png")
 
         # Set initial positions
         self.player1.rect.bottomleft = (50, 300)  # Left side of the screen
@@ -21,7 +21,7 @@ class Main:
         clock = pygame.time.Clock()
 
         # Background surfaces
-        sky_surface = pygame.image.load("graphics/Sky.png").convert()
+        sky_surface = pygame.image.load("graphics/sky.png").convert()
         ground_surface = pygame.image.load("graphics/ground.png").convert()
 
         while True:
