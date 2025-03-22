@@ -122,3 +122,20 @@ class Character(pygame.sprite.Sprite):
     
     def setFrame(self, newF):
         self.frame = newF
+
+
+class StaticObject(pygame.sprite.Sprite):
+    def __init__(self, path: Union[BinaryIO, str], coords: Tuple[int, int]):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(path)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = coords[0], coords[1]
+        
+    def init(self) -> None:
+        self.image = self.image.convert()
+        
+    def getRect(self) -> pygame.Rect:
+        return self.rect
+    
+    def getImage(self) -> pygame.Surface:
+        return self.image
