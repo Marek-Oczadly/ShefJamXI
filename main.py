@@ -3,8 +3,8 @@ from sys import exit
 
 class Main:
     def __init__(self):
-        # player1 = Cyborg()
-        # player2 = Playboi()
+        self.player1 = Cyborg()
+        self.player2 = Playboi()
         pass
 
     def run(self):
@@ -24,9 +24,15 @@ class Main:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
-            
+
+            keys = pygame.key.get_pressed()
+
+            result_p1 = self.player1.update(keys)
+            result_p2 = self.player2.update(keys)
+
             pygame.display.update()
             clock.tick(60)
+
 
 if __name__ == "__main__":
     app = Main()
