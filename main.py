@@ -8,7 +8,7 @@ class Main:
     def __init__(self):
         # Initialize Player 1 (Cyborg) and Player 2 (Two-Face)
         self.player1 = Cyborg("player1", 100, "graphics/cyborg/cyborg_base.png")
-        self.player2 = Cyborg("player2", 100, "graphics/cyborg/cyborg_base.png")
+        self.player2 = TwoFace("player2", 100, "graphics/two_face/two_face_base.png")
 
         # Set initial positions
         self.player1.rect.bottomleft = (10, 300)  # Left side of the screen
