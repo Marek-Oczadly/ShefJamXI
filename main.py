@@ -2,6 +2,7 @@ import pygame
 from sys import exit
 from character import Character
 from cyborg import Cyborg
+from two_face import TwoFace
 
 class Main:
     def __init__(self):
@@ -20,7 +21,7 @@ class Main:
         clock = pygame.time.Clock()
 
         # Background surfaces
-        sky_surface = pygame.image.load("graphics/Sky.png").convert()
+        sky_surface = pygame.image.load("graphics/sky.png").convert()
         ground_surface = pygame.image.load("graphics/ground.png").convert()
 
         while True:

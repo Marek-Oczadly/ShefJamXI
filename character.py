@@ -30,6 +30,7 @@ class Character(pygame.sprite.Sprite):
         self.f_press_count = 0
         self.f_last_press_time = 0
         self.combo_pause_limit = 500
+
         self.current_attack = ""
 
         self.last_hit_time = 0
@@ -46,7 +47,7 @@ class Character(pygame.sprite.Sprite):
     def jump(self):
         self.rect = self.rect.move(0, -jump(10, self.jump_frame))
         self.jump_frame += 1
-        if self.isOnFloor():
+        if self.isOnFloor(): #PROBLEM is here, its doing end jump although rect not >= 300
             self.end_jump()
         
     def end_jump(self):
