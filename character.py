@@ -62,6 +62,9 @@ class Character(pygame.sprite.Sprite):
                 return 
         self.resetAnimation()
     
+    def execute_combo(self, frame_data):
+        self.setComboFrame(self.frame, frame_data)
+    
     def resetAnimation(self):
         self.frame = 0
 
@@ -81,58 +84,52 @@ class Character(pygame.sprite.Sprite):
         current_time = pygame.time.get_ticks()
 
         if not self.attacking:
-            # Handle key presses for movement and jumping
-            if keys[pygame.K_a]:
-                self.move(-5)
-            if keys[pygame.K_d]:
-                self.move(5)
-            if keys[pygame.K_SPACE] and self.jump_frame is None:
-                self.begin_jump()
-            if self.jump_frame is not None:
-                self.jump()
-
-            # Detect 'f' presses
-            if keys[pygame.K_f]:
-                # Increment press count and update the last press timestamp
-                self.f_press_count += 1
-                self.f_last_press_time = current_time
-                pygame.time.delay(150)  # Prevent rapid polling for a single press
-
-            # Detect a pause after the last 'f' press
-            elif self.f_press_count > 0 and current_time - self.f_last_press_time > self.combo_pause_limit:
-                # Decide which combo to activate based on the press count
-                if self.f_press_count >= 4:
-                    self.combo5()  # Trigger the 4-click combo
-                    self.current_attack = "combo5"
-                elif self.f_press_count >= 3:
-                    self.combo4()  # Trigger the 3-click combo
-                    self.current_attack = "combo4"
-                elif self.f_press_count >= 2:
-                    self.combo2()
-                    self.current_attack = "combo2"
-                elif self.f_press_count >= 1:
-                    self.combo1()
-                    self.current_attack = "combo1"
-                
-                self.attacking = True
-                
-                self.f_press_count = 0  # Reset press count after combo
-
+            self.handle_movement(keys)
+            self.handle_jump(keys)
+            self.handle_combo_input(keys, current_time)
         else:
-            # Continue the current combo
-            match self.current_attack:
-                case "combo1":
-                    self.combo1()
-                case "combo2":
-                    self.combo2()
-                case "combo3":
-                    pass
-                case "combo4":
-                    self.combo4()
-                case "combo5":
-                    self.combo5()
-            self.frame += 0.5
+            self.execute_current_combo()
+    
+    def handle_movement(self, keys):
+        if keys[pygame.K_a]:  # Move left
+            self.move(-5)
+        if keys[pygame.K_d]:  # Move right
+            self.move(5)
+            
+    def handle_jump(self, keys):
+        if keys[pygame.K_SPACE] and self.jump_frame is None:
+            self.begin_jump()  # Start a jump
+        if self.jump_frame is not None:
+            self.jump()  # Continue the jump
+    
+    def handle_combo_input(self, keys, current_time):
+        if keys[pygame.K_f]:
+            # Increment press count and update the last press timestamp
+            self.f_press_count += 1
+            self.f_last_press_time = current_time
+            pygame.time.delay(150)  # Prevent rapid polling for a single press
+        elif self.f_press_count > 0 and current_time - self.f_last_press_time > self.combo_pause_limit:
+            self.trigger_combo()  # Handle combo activation
+    
+    def trigger_combo(self):
+        if self.f_press_count >= 4:
+            self.current_attack = "combo4"
+        elif self.f_press_count >= 3:
+            self.current_attack = "combo3"
+        elif self.f_press_count >= 2:
+            self.current_attack = "combo2"
+        elif self.f_press_count >= 1:
+            self.current_attack = "combo1"
         
+        self.attacking = True
+        self.f_press_count = 0  # Reset press count after triggering a combo
+    
+    def execute_current_combo(self):
+        if self.current_attack:
+            self.execute_combo(self.combos[self.current_attack])  # Execute the combo
+        self.frame += 0.5
+
+
     def getImg(self):
         return self.image
     
