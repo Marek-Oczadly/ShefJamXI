@@ -160,10 +160,10 @@ class Character(pygame.sprite.Sprite):
             # Extend the hitbox to the right if facing right
             if self.player_name == "player1":  # Example: Assuming facing right by default
                 return pygame.Rect(self.rect.left+self.rect.width/2, self.rect.y + int(self.rect.height * (1 - 0.8) / 2),
-                                self.rect.width / 2, int(self.rect.height * 0.8))
+                                self.rect.width / 5, int(self.rect.height * 0.8))
             else:  # Extend hitbox to the left if facing left
                 return pygame.Rect(self.rect.left, self.rect.y + int(self.rect.height * (1 - 0.8) / 2),
-                                self.rect.width / 2 , int(self.rect.height * 0.8))
+                                self.rect.width / 5, int(self.rect.height * 0.8))
         return None
     
     def check_collision(self, opponent):
@@ -173,7 +173,7 @@ class Character(pygame.sprite.Sprite):
         return False
     
     def apply_damage(self, opponent, damage_amount, current_time):
-        if current_time - self.last_hit_time > 3000:  # 3s cooldown
+        if current_time - self.last_hit_time > 1500:  # 3s cooldown
             opponent.hp -= damage_amount
             self.last_hit_time = current_time
 
