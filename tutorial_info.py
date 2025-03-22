@@ -2,6 +2,7 @@
 import pygame
 import random
 import math
+from pygame import mixer #class that handles sounds (loading, repeating etc)
 
 # --ADDITIONAL NOTES:
 # -- an event is anything that is happening inside your game window i.e. pressing a key
@@ -18,8 +19,10 @@ pygame.display.set_caption("Spacey Vaders")
 icon = pygame.image.load("graphics/galaxy.png")
 pygame.display.set_icon(icon)
 
-#background image
+#background image and sound
 background = pygame.image.load("graphics/space-background.png")
+mixer.music.load("audio/game-background.wav") #use .music for sounds that will play continuously/for a while
+mixer.music.play(-1) #loops the sound
 
 #ADDING IMAGES INTO GAME WINDOW
 #PLAYER
@@ -28,20 +31,45 @@ playerX = 670 #x-coord of image
 playerY = 380 #y-coord of image
 playerX_change = 0
 playerY_change = 0
+
+#SCORE
 player_score = 0
+font = pygame.font.Font('font/Pixeltype.ttf', 48)
+textX = 10 #coordinates of the text
+textY = 10
+
+#GAME OVER
+game_over_font = pygame.font.Font('font/Pixeltype.ttf', 96)
+
+
+def show_score(x, y):
+    score = font.render("Score: " + str(player_score), True, (255, 100, 221)) #true = show score, put colour
+    screen.blit(score, (x, y))
+
+def game_over_text():
+    over_text = game_over_font.render("GAME OVER", True, (255, 255, 255))
+    screen.blit(over_text, (254, 284))
 
 def player(x,y):
     screen.blit(playerImg, (x, y)) #draws loaded image on screen
 
-#ENEMY
-enemyImg = pygame.image.load("graphics/space-enemy.png")
-enemyX = random.randint(0, 736) #enemy spawns at random points in game window
-enemyY = random.randint(0, 536) 
-enemyX_change = 4
-enemyY_change = 4
+#ENEMY - MULTIPLE ENEMIES
+enemyImg = []
+enemyX = []
+enemyY = [] 
+enemyX_change = [] 
+enemyY_change = []
+num_of_enemies = 2
 
-def enemy(x,y):
-    screen.blit(enemyImg, (x,y))
+for i in range (num_of_enemies):
+    enemyImg.append(pygame.image.load("graphics/space-enemy.png"))
+    enemyX.append(random.randint(0, 736)) #enemy spawns at random points in game window
+    enemyY.append(random.randint(0, 536)) 
+    enemyX_change.append(2)
+    enemyY_change.append(2)
+
+def enemy(x, y, i):
+    screen.blit(enemyImg[i], (x,y))
 
 #SHURIKEN
 # "ready" - shuriken cannot be seen on screen
@@ -90,6 +118,9 @@ while running:
                 playerY_change = 5
             elif event.key == pygame.K_SPACE:
                 if shuriken_state == "ready":
+                    #shuriken throw sound
+                    shuriken_sound = mixer.Sound("audio/shuriken-throw.wav")
+                    shuriken_sound.play()
                     #get current coordinate of player, then fire
                     shurikenX = playerX
                     shurikenY = playerY
@@ -111,17 +142,48 @@ while running:
     elif playerY >= 536:
         playerY = 536
 
-    enemyX += enemyX_change
-    if enemyX <= 0:
-        enemyX_change = 4 #enemy moves away from boundary
-    elif enemyX >= 736:
-        enemyX_change = -4
-    
-    enemyY += enemyY_change
-    if enemyY <= 0:
-        enemyY_change = 4
-    elif enemyY >= 536:
-        enemyY_change = -4
+    #ENEMY MOVEMENT
+    for i in range(num_of_enemies):
+
+        #GAME OVER
+        if abs(playerX - enemyX[i]) < 4 and abs(playerY - enemyY[i] < 4):
+            for j in range(num_of_enemies):
+                playerY = 2000
+                enemyY[j] = 2000 #get all enemies off the screen
+            game_over_text()
+            pygame.quit()
+            break
+
+
+        enemyX[i] += enemyX_change[i]
+        if enemyX[i] <= 0:
+            enemyX_change[i] = 2 #enemy moves away from boundary
+        elif enemyX[i] >= 736:
+            enemyX_change[i] = -2
+        
+        enemyY[i] += enemyY_change[i]
+        if enemyY[i] <= 0:
+            enemyY_change[i] = 2
+        elif enemyY[i] >= 536:
+            enemyY_change[i] = -2
+
+        #COLLISION
+        collision = isCollision(enemyX[i], enemyY[i], shurikenX, shurikenY)
+        if collision:
+            #collision sound
+            collision_sound = mixer.Sound("audio/explosion.wav")
+            collision_sound.play()
+            #screen.blit(collisionImg, (shurikenX, shurikenY))
+            #reset shuriken to its starting point (the player)
+            shurikenX = playerX
+            shurikenY = playerY
+            shuriken_state = "ready" #because shuriken isnt being shown anymore
+            player_score = player_score + 1
+            collision = False
+            enemyX[i] = random.randint(0, 736)
+            enemyY[i] = random.randint(0, 536) 
+
+        enemy(enemyX[i], enemyY[i], i)
 
     player(playerX, playerY) 
 
@@ -134,23 +196,5 @@ while running:
         fire_shuriken(shurikenX, shurikenY)
         shurikenX -= shurikenX_change 
 
-    #COLLISION
-    collision = isCollision(enemyX, enemyY, shurikenX, shurikenY)
-    if collision:
-        #reset shuriken to its starting point (the player)
-        #screen.blit(collisionImg, (shurikenX, shurikenY))
-        shurikenX = playerX
-        shurikenY = playerY
-        shuriken_state = "ready" #because shuriken isnt being shown anymore
-        player_score = player_score + 1
-        print(player_score)
-        collision = False
-        enemyX = random.randint(0, 736)
-        enemyY = random.randint(0, 536) 
-
-    enemy(enemyX, enemyY)
-    pygame.display.update() #ensures game window is updated everytime something is added
-
-        
-
-
+    show_score(textX, textY)
+    pygame.display.update() #ensures game window is updated everytime something is added 
