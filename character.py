@@ -1,4 +1,11 @@
 import pygame
+from typing import *
+
+def jump(initial_v: float, frame: int, gravity: float = -5.5, frame_rate: int = 60, pixels_per_meter: int = 30) -> float :
+    gravity_new_units = (gravity * pixels_per_meter) / (frame_rate * frame_rate)
+    return initial_v + gravity_new_units * frame
+
+
 
 class Character(pygame.sprite.Sprite):
 
@@ -15,9 +22,17 @@ class Character(pygame.sprite.Sprite):
     def move(self, direction):
         self.rect = self.rect.move(direction, 0)
 
+    def begin_jump(self):
+        self.jump_frame = 0
+        self.jump()
+    
     # make it jump, given array of keys
-    def jump(self, keys):
-        pass
+    def jump(self):
+        self.rect.move(0, jump(10, self.jump_frame))
+        self.jump_frame += 1
+        
+    def end_jump(self):
+        self.jump_frame = None
 
     # first combo, should be defined in subclass
     def combo1(self, keys):
