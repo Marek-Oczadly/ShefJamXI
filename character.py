@@ -1,10 +1,10 @@
 import pygame
 from typing import *
 
+
 def jump(initial_v: float, frame: int, gravity: float = -5.5, frame_rate: int = 60, pixels_per_meter: int = 30) -> float :
     gravity_new_units = (gravity * pixels_per_meter) / (frame_rate * frame_rate)
     return initial_v + gravity_new_units * frame
-
 
 
 class Character(pygame.sprite.Sprite):

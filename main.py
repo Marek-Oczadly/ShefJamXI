@@ -20,6 +20,7 @@ class Main:
 
         screen.blit(ground_surface,(0,300))
         screen.blit(sky_surface, (0,0))
+        
 
         while True:
             for event in pygame.event.get():
@@ -28,9 +29,7 @@ class Main:
                     exit()
 
             keys = pygame.key.get_pressed()
-
             self.player1.update(screen, keys)
-
             pygame.display.update()
             clock.tick(60)
 
