@@ -1,11 +1,12 @@
 import pygame
 from sys import exit
 from character import Character
+from cyborg import Cyborg
 import physics
 
 class Main:
     def __init__(self):
-        self.x = physics.PhysicsEngine()
+        self.physicsEngine = physics.PhysicsEngine()
         self.x.addCharacter(Character("Charlie", 100, "graphics/cyborg/cyborg_base.png"))
 
 
