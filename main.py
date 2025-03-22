@@ -1,13 +1,12 @@
 import pygame
 from sys import exit
-from character import Character
 from cyborg import Cyborg
 import physics
 
 class Main:
     def __init__(self):
-        self.physicsEngine = physics.PhysicsEngine()
-        self.physicsEngine.addCharacter(Character("Charlie", 100, "graphics/cyborg/cyborg_base.png"))
+        self.physicsEngine = physics.PhysicsEngine(gravity=-8)
+        self.physicsEngine.addCharacter(Cyborg("Charlie", 100, "graphics/cyborg/cyborg_base.png"))
 
 
     def run(self):
@@ -25,15 +24,13 @@ class Main:
 
         while True:
             screen.blit(ground_surface,(0,300))
-            screen.blit(sky_surface, (0,0))
+            screen.blit(sky_surface, (0, 0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
-
-            keys = pygame.key.get_pressed()
             
-            self.physicsEngine.update(keys)
+            self.physicsEngine.update(pygame.key.get_pressed())
             self.physicsEngine.blitAll(screen)
 
             pygame.display.update()

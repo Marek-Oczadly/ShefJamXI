@@ -19,17 +19,17 @@ class PhysicsEngine:
             else:
                 self.characters[i].acc[1] = min(0, self.characters[i].acc[1])
                 self.characters[i].vel[1] = min(0, self.characters[i].vel[1])
-            if not self.characters[i].vel[0] == 0:
-                self.characters[i].acc[0] = self.characters[i].vel[0] / abs(self.characters[i].vel[0]) * -0.5
+            if not self.characters[i].vel[0] == 0 :
+                if self.characters[i].isOnFloor():
+                    self.characters[i].acc[0] = self.characters[i].vel[0] / abs(self.characters[i].vel[0]) * -0.5
+                else:
+                    self.characters[i].acc[0] = self.characters[i].vel[0] / abs(self.characters[i].vel[0]) * -0.05
                 if ((self.characters[i].vel[0] < 0 and -self.characters[i].acc[0] < self.characters[i].vel[0]) or
                     (self.characters[i].vel[0] > 0 and -self.characters[i].acc[0] > self.characters[i].vel[0])):
                     self.characters[i].acc[0] = 0
                     self.characters[i].vel[0] = 0
             self.characters[i].vel += self.characters[i].acc
-            
-            print(self.characters[i].vel)
             self.characters[i].rect = self.characters[i].rect.move(self.characters[i].vel[0], self.characters[i].vel[1])
-            print(self.characters[i].getRect().bottom)
             
     def blitAll(self, screen: Surface) -> None:
         for i in range(len(self.characters)):

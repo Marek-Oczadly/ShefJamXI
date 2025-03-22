@@ -62,12 +62,18 @@ class Character(pygame.sprite.Sprite):
 
         if not self.attacking:
             # Handle key presses for movement and jumping
-            if keys[pygame.K_a]:
-                self.vel[0] = -5
-            if keys[pygame.K_d]:
-                self.vel[0] = 5
-            if keys[pygame.K_SPACE] and self.isOnFloor():
-                self.vel[1] = -8
+            if self.isOnFloor():
+                if keys[pygame.K_a]:
+                    self.vel[0] = -5
+                if keys[pygame.K_d]:
+                    self.vel[0] = 5
+                if keys[pygame.K_SPACE]:
+                    self.vel[1] = -8
+            else:
+                if keys[pygame.K_a]:
+                    self.acc[0] = -0.5
+                if keys[pygame.K_d]:
+                    self.vel[0] = 0.5
 
             # Track 'f' presses for combo
             if keys[pygame.K_f]:
