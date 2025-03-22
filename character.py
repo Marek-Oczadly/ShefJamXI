@@ -21,10 +21,9 @@ class Character(pygame.sprite.Sprite):
         # Combo tracking attributes
 
         self.f_press_count = 0
-        self.combo_timer = 0
-        self.combo_time_limit = 1000
-
-        # self.combo_thresholds = {3: self.combo1, 5: self.combo2}
+        self.f_last_press_time = 0
+        self.combo_pause_limit = 500
+        self.current_attack = ""
 
     # first combo, should be defined in subclass
     def combo1(self):
@@ -55,11 +54,6 @@ class Character(pygame.sprite.Sprite):
     def update(self, keys):
         current_time = pygame.time.get_ticks()
 
-        # Check if combo timer should reset
-        if self.combo_timer > 0 and current_time - self.combo_timer > self.combo_time_limit:
-            self.f_press_count = 0
-            self.combo_timer = 0
-
         if not self.attacking:
             # Handle key presses for movement and jumping
             if self.isOnFloor():
@@ -75,22 +69,46 @@ class Character(pygame.sprite.Sprite):
                 if keys[pygame.K_d]:
                     self.vel[0] = 0.5
 
-            # Track 'f' presses for combo
+            # Detect 'f' presses
             if keys[pygame.K_f]:
-                if self.f_press_count == 0:  # First press starts the timer
-                    self.combo_timer = current_time
+                # Increment press count and update the last press timestamp
                 self.f_press_count += 1
-                pygame.time.delay(150)  # Prevent rapid key polling for a single press
+                self.f_last_press_time = current_time
+                pygame.time.delay(150)  # Prevent rapid polling for a single press
 
-            # Trigger combo if the threshold is met
-            if self.f_press_count >= 3:
+            # Detect a pause after the last 'f' press
+            elif self.f_press_count > 0 and current_time - self.f_last_press_time > self.combo_pause_limit:
+                # Decide which combo to activate based on the press count
+                if self.f_press_count >= 4:
+                    self.combo5()  # Trigger the 4-click combo
+                    self.current_attack = "combo5"
+                elif self.f_press_count >= 3:
+                    self.combo4()  # Trigger the 3-click combo
+                    self.current_attack = "combo4"
+                elif self.f_press_count >= 2:
+                    self.combo2()
+                    self.current_attack = "combo2"
+                elif self.f_press_count >= 1:
+                    self.combo1()
+                    self.current_attack = "combo1"
+                
                 self.attacking = True
-                self.combo_timer = 0
-                self.f_press_count = 0
+                
+                self.f_press_count = 0  # Reset press count after combo
 
         else:
-            # Perform combo if in attacking state
-            self.combo1()
+            # Continue the current combo
+            match self.current_attack:
+                case "combo1":
+                    self.combo1()
+                case "combo2":
+                    self.combo2()
+                case "combo3":
+                    pass
+                case "combo4":
+                    self.combo4()
+                case "combo5":
+                    self.combo5()
             self.frame += 0.5
         
     def getImg(self):
