@@ -7,7 +7,7 @@ import physics
 class Main:
     def __init__(self):
         self.physicsEngine = physics.PhysicsEngine()
-        self.x.addCharacter(Character("Charlie", 100, "graphics/cyborg/cyborg_base.png"))
+        self.physicsEngine.addCharacter(Character("Charlie", 100, "graphics/cyborg/cyborg_base.png"))
 
 
     def run(self):
@@ -33,10 +33,8 @@ class Main:
 
             keys = pygame.key.get_pressed()
             
-            self.x.update(keys)
-            self.x.blitAll(screen)
-
-
+            self.physicsEngine.update(keys)
+            self.physicsEngine.blitAll(screen)
 
             pygame.display.update()
             clock.tick(60)
