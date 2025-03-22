@@ -15,6 +15,16 @@ class Cyborg(Character):
             (24, "graphics/cyborg/slash/cyborg_slash5.png")
         ]
         self.setComboFrame(self.frame, frame_data)
+
+    def combo2(self):
+        frame_data = [
+            (4, "graphics/cyborg/chest_blast/cyborg_chest1.png"),
+            (9, "graphics/cyborg/chest_blast/cyborg_chest2.png"),
+            (14, "graphics/cyborg/chest_blast/cyborg_chest3.png"),
+            (19, "graphics/cyborg/chest_blast/cyborg_chest4.png"),
+            (24, "graphics/cyborg/chest_blast/cyborg_chest5.png")
+        ]
+        self.setComboFrame(self.frame, frame_data)
     
     def combo4(self):
         frame_data = [
