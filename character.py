@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 from typing import *
 
 
@@ -15,7 +16,9 @@ class Character(pygame.sprite.Sprite):
 
     def __init__(self, player_name: str, max_hp: int, base_image: str):
         pygame.sprite.Sprite.__init__(self) 
-  
+        
+        self.acc = np.array([0, 0], type=np.float32)
+
         self.image = pygame.image.load(base_image)
         self.image = pygame.transform.scale_by(self.image, 0.25)
         self.rect = self.image.get_rect()
@@ -73,3 +76,7 @@ class Character(pygame.sprite.Sprite):
     
     def getRect(self):
         return self.rect
+
+
+class Floor(pygame.sprite.Sprite):
+    
