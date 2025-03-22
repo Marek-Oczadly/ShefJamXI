@@ -2,12 +2,14 @@ import pygame
 from sys import exit
 from character import Character
 from cyborg import Cyborg
+from two_face import TwoFace
 
 class Main:
     def __init__(self):
-        self.player1 = Cyborg(
-            "Charlie", 100, "graphics/cyborg/cyborg_base.png"
-        ) 
+        self.player1 = TwoFace("Lily", 100, "graphics/two_face/two_face_base.png")
+        #Cyborg(
+        #    "Charlie", 100, "graphics/cyborg/cyborg_base.png"
+        #) 
 
 
     def run(self):

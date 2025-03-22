@@ -31,8 +31,6 @@ class Character(pygame.sprite.Sprite):
         self.combo_timer = 0
         self.combo_time_limit = 1000
 
-        # self.combo_thresholds = {3: self.combo1, 5: self.combo2}
-
     # make it move, given array of keys
     def move(self, direction):
         self.rect = self.rect.move(direction, 0)
@@ -45,7 +43,7 @@ class Character(pygame.sprite.Sprite):
     def jump(self):
         self.rect = self.rect.move(0, -jump(10, self.jump_frame))
         self.jump_frame += 1
-        if self.isOnFloor():
+        if self.isOnFloor(): #PROBLEM is here, its doing end jump although rect not >= 300
             self.end_jump()
         
     def end_jump(self):
@@ -68,7 +66,8 @@ class Character(pygame.sprite.Sprite):
 
         self.attacking = False
 
-        self.setRect("graphics/cyborg/cyborg_base.png")
+        #self.setRect("graphics/cyborg/cyborg_base.png")
+        self.setRect("graphics/two_face/two_face_base.png")
 
     def setRect(self, new_file: str):
         self.image = pygame.image.load(new_file).convert_alpha()
