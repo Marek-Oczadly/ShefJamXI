@@ -28,8 +28,10 @@ class Character(pygame.sprite.Sprite):
         # Combo tracking attributes
 
         self.f_press_count = 0
-        self.combo_timer = 0
-        self.combo_time_limit = 1000
+        self.f_last_press_time = 0
+        self.combo_pause_limit = 500
+
+        self.current_attack = ""
 
     # make it move, given array of keys
     def move(self, direction):
@@ -61,13 +63,15 @@ class Character(pygame.sprite.Sprite):
                 return 
         self.resetAnimation()
     
+    def execute_combo(self, frame_data):
+        self.setComboFrame(self.frame, frame_data)
+    
     def resetAnimation(self):
         self.frame = 0
 
         self.attacking = False
 
-        #self.setRect("graphics/cyborg/cyborg_base.png")
-        self.setRect("graphics/two_face/two_face_base.png")
+        self.setRect("graphics/cyborg/cyborg_base.png")
 
     def setRect(self, new_file: str):
         self.image = pygame.image.load(new_file).convert_alpha()
@@ -77,45 +81,77 @@ class Character(pygame.sprite.Sprite):
     def isOnFloor(self) -> bool:
         return self.rect.bottom >= 300
 
-    def update(self, keys):
+    def update_with_controls(self, keys, player):
         current_time = pygame.time.get_ticks()
 
-        # Check if combo timer should reset
-        if self.combo_timer > 0 and current_time - self.combo_timer > self.combo_time_limit:
-            self.f_press_count = 0
-            self.combo_timer = 0
-
         if not self.attacking:
-            # Handle key presses for movement and jumping
-            if keys[pygame.K_a]:  # Move left
-                self.move(-5)
-            if keys[pygame.K_d]:  # Move right
-                self.move(5)
-            if keys[pygame.K_SPACE] and self.jump_frame is None:  # Begin jump
-                self.begin_jump()
-
-            # Continue jump if in progress
-            if self.jump_frame is not None:
-                self.jump()
-
-            # Track 'f' presses for combo
-            if keys[pygame.K_f]:
-                if self.f_press_count == 0:  # First press starts the timer
-                    self.combo_timer = current_time
-                self.f_press_count += 1
-                pygame.time.delay(150)  # Prevent rapid key polling for a single press
-
-            # Trigger combo if the threshold is met
-            if self.f_press_count >= 3:
-                self.attacking = True
-                self.combo_timer = 0
-                self.f_press_count = 0
-
+            if player == 1:  # Player 1 controls
+                self.handle_player1_input(keys, current_time)
+            elif player == 2:  # Player 2 controls
+                self.handle_player2_input(keys, current_time)
         else:
-            # Perform combo if in attacking state
-            self.combo1()
-            self.frame += 0.5
+            self.execute_current_combo()
+    
+    def handle_player1_input(self, keys, current_time):
+        # Movement keys for Player 1
+        if keys[pygame.K_a]:  # Move left
+            self.move(-5)
+        if keys[pygame.K_d]:  # Move right
+            self.move(5)
+
+        # Jump and combo keys for Player 1
+        if keys[pygame.K_SPACE] and self.jump_frame is None:  # Jump
+            self.begin_jump()
+        if self.jump_frame is not None:
+            self.jump()
+
+        if keys[pygame.K_f]:  # Attack/Combo
+            self.f_press_count += 1
+            self.f_last_press_time = current_time
+            pygame.time.delay(150)
+        elif self.f_press_count > 0 and current_time - self.f_last_press_time > self.combo_pause_limit:
+            self.trigger_combo()
+
+
+    def handle_player2_input(self, keys, current_time):
+        # Movement keys for Player 2
+        if keys[pygame.K_LEFT]:  # Move left
+            self.move(-5)
+        if keys[pygame.K_RIGHT]:  # Move right
+            self.move(5)
+
+        # Jump and combo keys for Player 2
+        if keys[pygame.K_j] and self.jump_frame is None:  # Jump
+            self.begin_jump()
+        if self.jump_frame is not None:
+            self.jump()
+
+        if keys[pygame.K_p]:  # Attack/Combo
+            self.f_press_count += 1
+            self.f_last_press_time = current_time
+            pygame.time.delay(150)
+        elif self.f_press_count > 0 and current_time - self.f_last_press_time > self.combo_pause_limit:
+            self.trigger_combo()
+    
+    def trigger_combo(self):
+        if self.f_press_count >= 4:
+            self.current_attack = "combo4"
+        elif self.f_press_count >= 3:
+            self.current_attack = "combo3"
+        elif self.f_press_count >= 2:
+            self.current_attack = "combo2"
+        elif self.f_press_count >= 1:
+            self.current_attack = "combo1"
         
+        self.attacking = True
+        self.f_press_count = 0  # Reset press count after triggering a combo
+    
+    def execute_current_combo(self):
+        if self.current_attack:
+            self.execute_combo(self.combos[self.current_attack])  # Execute the combo
+        self.frame += 0.5
+
+
     def getImg(self):
         return self.image
     
