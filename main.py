@@ -1,12 +1,12 @@
 import pygame
 from sys import exit
 from character import Character
+import physics
 
 class Main:
     def __init__(self):
-        self.player1 = Character(
-            "Charlie", 100, "graphics/cyborg/cyborg_base.png"
-        ) 
+        self.x = physics.PhysicsEngine()
+        self.x.addCharacter(Character("Charlie", 100, "graphics/cyborg/cyborg_base.png"))
 
 
     def run(self):
@@ -31,9 +31,10 @@ class Main:
                     exit()
 
             keys = pygame.key.get_pressed()
+            
+            self.x.update(keys)
+            self.x.blitAll(screen)
 
-            self.player1.update(keys)
-            screen.blit(self.player1.getImg(), self.player1.getRect())
 
 
             pygame.display.update()
