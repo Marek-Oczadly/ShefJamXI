@@ -1,6 +1,7 @@
 #learning pygame
 import pygame
 import random
+import math
 
 # --ADDITIONAL NOTES:
 # -- an event is anything that is happening inside your game window i.e. pressing a key
@@ -27,6 +28,7 @@ playerX = 670 #x-coord of image
 playerY = 380 #y-coord of image
 playerX_change = 0
 playerY_change = 0
+player_score = 0
 
 def player(x,y):
     screen.blit(playerImg, (x, y)) #draws loaded image on screen
@@ -45,17 +47,26 @@ def enemy(x,y):
 # "ready" - shuriken cannot be seen on screen
 # "fire" - shuriken is currently moving
 shurikenImg = pygame.image.load("graphics/shuriken.png")
-shurikenX = playerX
-shurikenY = playerY
+shurikenX = 0
+shurikenY = 0
 shurikenX_change = 10
 shuriken_state = "ready"; 
 
 def fire_shuriken(x,y):
     global shuriken_state #global lets variable be accessed within method
     shuriken_state = "fire"
-    screen.blit(shurikenImg, (x + 10, y + 26))
+    screen.blit(shurikenImg, (x - 10, y + 30))
 
-#CREATING THE GAME LOOP - ensures game doesnt close until close button is pressed
+#COLLISION DETECTION
+def isCollision(eX, eY, sX, sY):
+    #equation for distance between two points
+    distance = math.sqrt((math.pow(eX - sX,2)) + (math.pow(eY - sY,2)))
+    if distance < 25:
+        return True
+    else:
+        return False
+
+#CREATING THE GAME LOOP - ensures game doesnt close until close button is pressed, where the game is actually run from
 running = True
 while running: 
     #background colour and image
@@ -78,7 +89,11 @@ while running:
             elif event.key == pygame.K_DOWN:
                 playerY_change = 5
             elif event.key == pygame.K_SPACE:
-                fire_shuriken(shurikenX, shurikenY)
+                if shuriken_state == "ready":
+                    #get current coordinate of player, then fire
+                    shurikenX = playerX
+                    shurikenY = playerY
+                    fire_shuriken(shurikenX, shurikenY)
         if event.type == pygame.KEYUP: #keypress released
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 playerX_change = 0
@@ -108,16 +123,31 @@ while running:
     elif enemyY >= 536:
         enemyY_change = -4
 
+    player(playerX, playerY) 
+
     #SHURIKEN MOVEMENT
+    #ensures shuriken cannot be fired until last one exits screen
+    if shurikenX <= 0:
+        shurikenX = playerX
+        shuriken_state = "ready"
     if shuriken_state == "fire":
-        print("plX" + str(playerX))
-        print("plY" + str(playerY))
-        print("shX" + str(shurikenX))
-        print("shY" + str(shurikenY))
         fire_shuriken(shurikenX, shurikenY)
         shurikenX -= shurikenX_change 
-    
-    player(playerX, playerY) 
+
+    #COLLISION
+    collision = isCollision(enemyX, enemyY, shurikenX, shurikenY)
+    if collision:
+        #reset shuriken to its starting point (the player)
+        #screen.blit(collisionImg, (shurikenX, shurikenY))
+        shurikenX = playerX
+        shurikenY = playerY
+        shuriken_state = "ready" #because shuriken isnt being shown anymore
+        player_score = player_score + 1
+        print(player_score)
+        collision = False
+        enemyX = random.randint(0, 736)
+        enemyY = random.randint(0, 536) 
+
     enemy(enemyX, enemyY)
     pygame.display.update() #ensures game window is updated everytime something is added
 
