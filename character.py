@@ -6,7 +6,6 @@ def jump(initial_v: float, frame: int, gravity: float = -5.5, frame_rate: int = 
     return initial_v + gravity_new_units * frame
 
 
-
 class Character(pygame.sprite.Sprite):
 
     def __init__(self, player_name: str, max_hp: int, base_image: str):
