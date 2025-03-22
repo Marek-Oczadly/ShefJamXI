@@ -6,12 +6,12 @@ from cyborg import Cyborg
 class Main:
     def __init__(self):
         # Initialize Player 1 (Cyborg) and Player 2 (Two-Face)
-        self.player1 = Cyborg("Cyborg", 100, "graphics/cyborg/cyborg_base.png")
-        self.player2 = Cyborg("Two-Face", 100, "graphics/cyborg/cyborg_base.png")
+        self.player1 = Cyborg("player1", 100, "graphics/cyborg/cyborg_base.png")
+        self.player2 = Cyborg("player2", 100, "graphics/cyborg/cyborg_base.png")
 
         # Set initial positions
-        self.player1.rect.bottomleft = (50, 300)  # Left side of the screen
-        self.player2.rect.bottomleft = (500, 300)  # Right side of the screen
+        self.player1.rect.bottomleft = (10, 300)  # Left side of the screen
+        self.player2.rect.bottomleft = (550, 300)  # Right side of the screen
 
     def run(self):
         pygame.init()
@@ -27,6 +27,14 @@ class Main:
             screen.blit(ground_surface, (0, 300))
             screen.blit(sky_surface, (0, 0))
 
+            pygame.draw.rect(screen, "Grey", (30, 10, 200, 30))
+            # Draw foreground (e.g., green for health)
+            pygame.draw.rect(screen, "Green", (30, 10, self.player1.getHealth()*2, 30))
+
+            pygame.draw.rect(screen, "Grey", (570, 10, 200, 30))
+            # Draw foreground (e.g., green for health)
+            pygame.draw.rect(screen, "Green", (570, 10, self.player1.getHealth()*2, 30))
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -41,6 +49,20 @@ class Main:
             # Render both players
             screen.blit(self.player1.getImg(), self.player1.getRect())
             screen.blit(self.player2.getImg(), self.player2.getRect())
+
+            if self.player1.attacking and self.player1.check_collision(self.player2):
+                self.player1.apply_damage(self.player2, 10)  # Player 2 takes 10 damage
+                print(self.player2.hp)
+
+            if self.player2.attacking and self.player2.check_collision(self.player1):
+                self.player1.apply_damage(self.player1, 10)
+                self.player1.hp -= 10  # Reduce Player 1's health by 10
+
+            self.player1.draw_attack_hitbox(screen)
+            self.player2.draw_attack_hitbox(screen)
+
+            pygame.draw.rect(screen, "Green", self.player1.rect, 2)
+            pygame.draw.rect(screen, "Green", self.player2.rect, 2)
 
             pygame.display.update()
             clock.tick(60)

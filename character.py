@@ -13,14 +13,14 @@ def move():
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, player_name: str, max_hp: int, base_image: str):
+    def __init__(self, player_name: str, hp: int, base_image: str):
         pygame.sprite.Sprite.__init__(self) 
   
         self.image = pygame.image.load(base_image)
         self.image = pygame.transform.scale_by(self.image, 0.25)
         self.rect = self.image.get_rect()
         self.player_name = player_name
-        self.max_hp = max_hp
+        self.hp = hp
         self.jump_frame = None
         self.attacking = False
         self.frame = 0
@@ -31,6 +31,8 @@ class Character(pygame.sprite.Sprite):
         self.f_last_press_time = 0
         self.combo_pause_limit = 500
         self.current_attack = ""
+
+        self.last_hit_time = 0
 
     # make it move, given array of keys
     def move(self, direction):
@@ -150,7 +152,36 @@ class Character(pygame.sprite.Sprite):
             self.execute_combo(self.combos[self.current_attack])  # Execute the combo
         self.frame += 0.5
 
+    def get_attack_rect(self):
 
+        if self.current_attack:  # If the player is attacking
+            # Extend the hitbox to the right if facing right
+            if self.player_name == "player1":  # Example: Assuming facing right by default
+                return pygame.Rect(self.rect.left+self.rect.width/2, self.rect.y + int(self.rect.height * (1 - 0.8) / 2),
+                                self.rect.width / 2, int(self.rect.height * 0.8))
+            else:  # Extend hitbox to the left if facing left
+                return pygame.Rect(self.rect.left, self.rect.y + int(self.rect.height * (1 - 0.8) / 2),
+                                self.rect.width / 2 , int(self.rect.height * 0.8))
+        return None
+    
+    def check_collision(self, opponent):
+        attack_rect = self.get_attack_rect()
+        if attack_rect and attack_rect.colliderect(opponent.rect):  # Check for overlap
+            print("player hit!")
+            return True
+        return False
+    
+    def apply_damage(self, opponent, damage_amount):
+        current_time = pygame.time.get_ticks()
+        if current_time - self.last_hit_time > 300:  # 300ms cooldown
+            opponent.hp -= damage_amount
+            self.last_hit_time = current_time
+
+    def draw_attack_hitbox(self, screen):
+        attack_rect = self.get_attack_rect()
+        if attack_rect:
+            pygame.draw.rect(screen, (255, 0, 0), attack_rect, 2)  # Draw a red outline for the hitbox
+    
     def getImg(self):
         return self.image
     
@@ -159,6 +190,9 @@ class Character(pygame.sprite.Sprite):
     
     def getFrame(self):
         return self.frame
+    
+    def getHealth(self):
+        return self.hp
     
     def setFrame(self, newF):
         self.frame = newF
