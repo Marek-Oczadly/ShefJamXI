@@ -80,36 +80,57 @@ class Character(pygame.sprite.Sprite):
     def isOnFloor(self) -> bool:
         return self.rect.bottom >= 300
 
-    def update(self, keys):
+    def update_with_controls(self, keys, player):
         current_time = pygame.time.get_ticks()
 
         if not self.attacking:
-            self.handle_movement(keys)
-            self.handle_jump(keys)
-            self.handle_combo_input(keys, current_time)
+            if player == 1:  # Player 1 controls
+                self.handle_player1_input(keys, current_time)
+            elif player == 2:  # Player 2 controls
+                self.handle_player2_input(keys, current_time)
         else:
             self.execute_current_combo()
     
-    def handle_movement(self, keys):
+    def handle_player1_input(self, keys, current_time):
+        # Movement keys for Player 1
         if keys[pygame.K_a]:  # Move left
             self.move(-5)
         if keys[pygame.K_d]:  # Move right
             self.move(5)
-            
-    def handle_jump(self, keys):
-        if keys[pygame.K_SPACE] and self.jump_frame is None:
-            self.begin_jump()  # Start a jump
+
+        # Jump and combo keys for Player 1
+        if keys[pygame.K_SPACE] and self.jump_frame is None:  # Jump
+            self.begin_jump()
         if self.jump_frame is not None:
-            self.jump()  # Continue the jump
-    
-    def handle_combo_input(self, keys, current_time):
-        if keys[pygame.K_f]:
-            # Increment press count and update the last press timestamp
+            self.jump()
+
+        if keys[pygame.K_f]:  # Attack/Combo
             self.f_press_count += 1
             self.f_last_press_time = current_time
-            pygame.time.delay(150)  # Prevent rapid polling for a single press
+            pygame.time.delay(150)
         elif self.f_press_count > 0 and current_time - self.f_last_press_time > self.combo_pause_limit:
-            self.trigger_combo()  # Handle combo activation
+            self.trigger_combo()
+
+
+    def handle_player2_input(self, keys, current_time):
+        # Movement keys for Player 2
+        if keys[pygame.K_LEFT]:  # Move left
+            self.move(-5)
+        if keys[pygame.K_RIGHT]:  # Move right
+            self.move(5)
+
+        # Jump and combo keys for Player 2
+        if keys[pygame.K_j] and self.jump_frame is None:  # Jump
+            self.begin_jump()
+        if self.jump_frame is not None:
+            self.jump()
+
+        if keys[pygame.K_p]:  # Attack/Combo
+            self.f_press_count += 1
+            self.f_last_press_time = current_time
+            pygame.time.delay(150)
+        elif self.f_press_count > 0 and current_time - self.f_last_press_time > self.combo_pause_limit:
+            self.trigger_combo()
     
     def trigger_combo(self):
         if self.f_press_count >= 4:
