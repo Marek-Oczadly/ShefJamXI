@@ -5,7 +5,7 @@ from typing import *
 
 class Character(pygame.sprite.Sprite):
 
-    def __init__(self, player_name: str, hp: int, base_image: str):
+    def __init__(self, player_name: str, hp: int, base_image: str, player_number: int):
         pygame.sprite.Sprite.__init__(self) 
         
         self.acc = np.array([0., 0.])
@@ -15,9 +15,9 @@ class Character(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.player_name = player_name
         self.hp = hp
-        self.jump_frame = None
         self.attacking = False
         self.frame = 0
+        self.player_number = player_number
 
         # Combo tracking attributes
 
@@ -31,21 +31,6 @@ class Character(pygame.sprite.Sprite):
     # make it move, given array of keys
     def move(self, direction):
         self.rect = self.rect.move(direction, 0)
-
-    def begin_jump(self):
-        self.jump_frame = 0
-        self.jump()
-    
-    # make it jump, given array of keys
-    def jump(self):
-        self.rect = self.rect.move(0, -jump(10, self.jump_frame))
-        self.jump_frame += 1
-        if self.isOnFloor():
-            self.end_jump()
-        
-    def end_jump(self):
-        print("ended jump")
-        self.jump_frame = None
 
     # first combo, should be defined in subclass
     def combo1(self):
@@ -77,6 +62,9 @@ class Character(pygame.sprite.Sprite):
         
     def isOnFloor(self) -> bool:
         return self.rect.bottom >= 300
+    
+    def update(self, keys):
+        self.update_with_controls(keys, self.player_number)
 
     def update_with_controls(self, keys, player):
         current_time = pygame.time.get_ticks()
@@ -92,15 +80,13 @@ class Character(pygame.sprite.Sprite):
     def handle_player1_input(self, keys, current_time):
         # Movement keys for Player 1
         if keys[pygame.K_a]:  # Move left
-            self.move(-5)
+            self.vel[0] = -5
         if keys[pygame.K_d]:  # Move right
-            self.move(5)
+            self.vel[0] = 5
 
         # Jump and combo keys for Player 1
-        if keys[pygame.K_SPACE] and self.jump_frame is None:  # Jump
-            self.begin_jump()
-        if self.jump_frame is not None:
-            self.jump()
+        if keys[pygame.K_SPACE]:  # Jump
+            self.vel[1] = 15
 
         if keys[pygame.K_f]:  # Attack/Combo
             self.f_press_count += 1
@@ -113,15 +99,14 @@ class Character(pygame.sprite.Sprite):
     def handle_player2_input(self, keys, current_time):
         # Movement keys for Player 2
         if keys[pygame.K_LEFT]:  # Move left
-            self.move(-5)
+            self.vel[0] = -5
         if keys[pygame.K_RIGHT]:  # Move right
-            self.move(5)
+            self.vel[0] = 5
 
         # Jump and combo keys for Player 2
         if keys[pygame.K_j] and self.jump_frame is None:  # Jump
-            self.begin_jump()
-        if self.jump_frame is not None:
-            self.jump()
+            self.vel[1] = 15
+
 
         if keys[pygame.K_p]:  # Attack/Combo
             self.f_press_count += 1

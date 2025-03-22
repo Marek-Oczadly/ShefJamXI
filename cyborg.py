@@ -3,8 +3,8 @@ from character import Character
 
 class Cyborg(Character):
 
-    def __init__(self, player_name, max_hp, base_image):
-        super().__init__(player_name, max_hp, base_image)
+    def __init__(self, player_name, max_hp, base_image, player_number):
+        super().__init__(player_name, max_hp, base_image, player_number)
         self.combos = {
             "combo1": [
                 (4, "graphics/cyborg/slash/cyborg_slash1.png"),

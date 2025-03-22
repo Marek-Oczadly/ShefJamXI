@@ -13,8 +13,10 @@ class PhysicsEngine:
         for i in range(len(self.statics)):
             self.statics[i].init()
         
-    def addCharacter(self, character: character.Character) -> None:
+    def addCharacter(self, character: character.Character, coordinates: Tuple[int, int]) -> None:
         self.characters.append(character)
+        self.characters[-1].rect.bottomleft = coordinates
+        
         
     def isOnFloor(self, character: character.Character) -> Tuple[bool, int]:
         for i in range(len(self.statics)):
@@ -22,7 +24,6 @@ class PhysicsEngine:
                 min(character.getRect().right, self.statics[i].getRect().right)) and
                 character.getRect().bottom < self.statics[i].getRect().bottom and
                 character.getRect().bottom > self.statics[i].getRect().top):
-                print("Reached")
                 return True, i
         return False, -1
     
