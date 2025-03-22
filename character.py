@@ -30,7 +30,6 @@ class Character(pygame.sprite.Sprite):
         self.f_press_count = 0
         self.f_last_press_time = 0
         self.combo_pause_limit = 500
-
         self.current_attack = ""
 
         self.last_hit_time = 0
@@ -47,7 +46,7 @@ class Character(pygame.sprite.Sprite):
     def jump(self):
         self.rect = self.rect.move(0, -jump(10, self.jump_frame))
         self.jump_frame += 1
-        if self.isOnFloor(): #PROBLEM is here, its doing end jump although rect not >= 300
+        if self.isOnFloor():
             self.end_jump()
         
     def end_jump(self):
@@ -76,9 +75,11 @@ class Character(pygame.sprite.Sprite):
         self.setRect("graphics/cyborg/cyborg_base.png")
 
     def setRect(self, new_file: str):
+        current_pos = self.rect.topleft  # Save the current position
         self.image = pygame.image.load(new_file).convert_alpha()
         self.image = pygame.transform.scale_by(self.image, 0.25)
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect()  # Get the new rect
+        self.rect.topleft = current_pos  # Restore the original position
         
     def isOnFloor(self) -> bool:
         return self.rect.bottom >= 300
