@@ -8,23 +8,23 @@ class Character(pygame.sprite.Sprite):
     def __init__(self, player_name: str, hp: int, base_image: str, player_number: int):
         pygame.sprite.Sprite.__init__(self) 
         
-        self.acc = np.array([0., 0.])
-        self.vel = np.array([0., 0.])
+        self.acc: np.ndarray = np.array([0., 0.])
+        self.vel: np.ndarray = np.array([0., 0.])
 
         self.image = pygame.transform.scale_by(pygame.image.load(base_image), 0.25)
         self.rect = self.image.get_rect()
-        self.player_name = player_name
-        self.hp = hp
-        self.attacking = False
-        self.frame = 0
-        self.player_number = player_number
+        self.player_name: str = player_name
+        self.hp: int = hp
+        self.attacking: bool = False
+        self.frame: int = 0
+        self.player_number: int = player_number
 
         # Combo tracking attributes
 
-        self.f_press_count = 0
+        self.f_press_count: int = 0
         self.f_last_press_time = 0
         self.combo_pause_limit = 500
-        self.current_attack = ""
+        self.current_attack: str = ""
 
         self.last_hit_time = 0
 
@@ -59,34 +59,41 @@ class Character(pygame.sprite.Sprite):
         self.image = pygame.transform.scale_by(self.image, 0.25)
         self.rect = self.image.get_rect()  # Get the new rect
         self.rect.topleft = current_pos  # Restore the original position
-        
-    def isOnFloor(self) -> bool:
-        return self.rect.bottom >= 300
     
-    def update(self, keys):
-        self.update_with_controls(keys, self.player_number)
+    def isOnFloor(self, physicsEngine) -> bool:
+        return physicsEngine.isOnFloor(self)[0]
+    
+    def update(self, keys, physicsEngine):
+        self.update_with_controls(keys, self.player_number, physicsEngine)
 
-    def update_with_controls(self, keys, player):
+    def update_with_controls(self, keys, player, physicsEngine) -> None:
         current_time = pygame.time.get_ticks()
 
         if not self.attacking:
             if player == 1:  # Player 1 controls
-                self.handle_player1_input(keys, current_time)
+                self.handle_player1_input(keys, current_time, physicsEngine)
             elif player == 2:  # Player 2 controls
-                self.handle_player2_input(keys, current_time)
+                self.handle_player2_input(keys, current_time, physicsEngine)
         else:
             self.execute_current_combo()
     
-    def handle_player1_input(self, keys, current_time):
+    def handle_player1_input(self, keys, current_time, physicsEngine) -> None:
         # Movement keys for Player 1
-        if keys[pygame.K_a]:  # Move left
-            self.vel[0] = -5
-        if keys[pygame.K_d]:  # Move right
-            self.vel[0] = 5
+        if keys[pygame.K_a] :  # Move left
+            if self.isOnFloor(physicsEngine):
+                self.vel[0] = max(-5, self.vel[0] - 1)
+            else:
+                self.vel[0] = max(-5, self.vel[0] - 0.5)
+                
+        if keys[pygame.K_d]:  # Move right#
+            if self.isOnFloor(physicsEngine):
+                self.vel[0] = min(5, self.vel[0] + 1)
+            else:
+                self.vel[0] = min(5, self.vel[0] + 0.5)
 
         # Jump and combo keys for Player 1
-        if keys[pygame.K_SPACE]:  # Jump
-            self.vel[1] = 15
+        if keys[pygame.K_SPACE] and self.isOnFloor(physicsEngine):  # Jump
+            self.vel[1] = -15
 
         if keys[pygame.K_f]:  # Attack/Combo
             self.f_press_count += 1
@@ -96,16 +103,24 @@ class Character(pygame.sprite.Sprite):
             self.trigger_combo()
 
 
-    def handle_player2_input(self, keys, current_time):
+    def handle_player2_input(self, keys, current_time, physicsEngine):
         # Movement keys for Player 2
-        if keys[pygame.K_LEFT]:  # Move left
-            self.vel[0] = -5
+        if keys[pygame.K_LEFT] :  # Move left
+            if self.isOnFloor(physicsEngine):
+                self.vel[0] = max(-5, self.vel[0] - 1)
+            else:
+                self.vel[0] = max(-5, self.vel[0] - 0.5)
+                
         if keys[pygame.K_RIGHT]:  # Move right
-            self.vel[0] = 5
+            if self.isOnFloor(physicsEngine):
+                self.vel[0] = min(5, self.vel[0] + 1)
+            else:
+                self.vel[0] = min(5, self.vel[0] + 0.5)
 
         # Jump and combo keys for Player 2
-        if keys[pygame.K_j] and self.jump_frame is None:  # Jump
-            self.vel[1] = 15
+        if keys[pygame.K_UP] and self.isOnFloor(physicsEngine):  # Jump
+            self.vel[1] = -15
+            print("Player 2 jumped")
 
 
         if keys[pygame.K_p]:  # Attack/Combo
@@ -180,17 +195,30 @@ class Character(pygame.sprite.Sprite):
 
 
 class StaticObject(pygame.sprite.Sprite):
+    
     def __init__(self, path: Union[BinaryIO, str], coords: Tuple[int, int]):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(path)
+        self.image = pygame.image.load(path).convert()
         self.rect = self.image.get_rect()
         self.rect.topleft = coords[0], coords[1]
-        
-    def init(self) -> None:
-        self.image = self.image.convert()
         
     def getRect(self) -> pygame.Rect:
         return self.rect
     
     def getImage(self) -> pygame.Surface:
         return self.image
+
+
+class Bar:
+    def __init__(self, fn: Callable[[], float], coords: Tuple[int, int], 
+                 max_dim: Tuple[int, int], colours: Tuple[str] = ("Grey", "Green")):
+        pygame.sprite.Sprite.__init__(self)
+        self.size_fn = fn
+        self.colours = colours
+        self.coords = coords
+        self.maxdim = max_dim
+    
+    def display(self, screen: pygame.Surface) -> None:
+        length: float = self.size_fn()
+        pygame.draw.rect(screen, self.colours[0], (*self.coords, *self.maxdim))
+        pygame.draw.rect(screen, self.colours[1], (*self.coords, length,self.maxdim[1]))

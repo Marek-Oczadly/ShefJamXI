@@ -1,38 +1,43 @@
 import numpy as np
-import character
+from character import Character, StaticObject
 from pygame import Surface
 from typing import *
 
 class PhysicsEngine:
     def __init__(self, gravity: float = -9.8, frame_rate = 60, ppm: int = 200):
         self.gravity: float = (gravity * ppm) / (frame_rate * frame_rate)
-        self.characters: List[character.Character] = []
-        self.statics: List[character.StaticObject] = []
-        self.background : character.StaticObject = None
+        self.characters: List[Character] = []
+        self.statics: List[StaticObject] = []
+        self.ambient: List = []
+        self.background : StaticObject = None
         
-    def addCharacter(self, character: character.Character, coordinates: Tuple[int, int]) -> int:
+    def addCharacter(self, character: Character, coordinates: Tuple[int, int]) -> int:
         self.characters.append(character)
         self.characters[-1].rect.bottomleft = coordinates
         return len(self.characters) - 1
         
-    def setBackground(self, obj: character.StaticObject):
+    def setBackground(self, obj: StaticObject):
         self.background = obj
-        
-    def isOnFloor(self, character: character.Character) -> Tuple[bool, int]:
+    
+    def addAmbient(self, obj):
+        self.ambient.append(obj)
+    
+    def isOnFloor(self, character: Character) -> Tuple[bool, int]:
         for i in range(len(self.statics)):
             if ((max(character.getRect().left, self.statics[i].getRect().left) <= 
                 min(character.getRect().right, self.statics[i].getRect().right)) and
                 character.getRect().bottom < self.statics[i].getRect().bottom and
                 character.getRect().bottom > self.statics[i].getRect().top):
+                character.getRect().bottom = self.statics[i].getRect().top + 5
                 return True, i
         return False, -1
     
-    def addStatic(self, obj: character.StaticObject) -> None:
+    def addStatic(self, obj: StaticObject) -> None:
         self.statics.append(obj)
     
     def update(self, keys_pressed) -> None:
         for i in range(len(self.characters)):
-            self.characters[i].update(keys_pressed)
+            self.characters[i].update(keys_pressed, self)
             if not self.isOnFloor(self.characters[i])[0]:
                 self.characters[i].acc[1] = -self.gravity
             else:
@@ -56,3 +61,5 @@ class PhysicsEngine:
             screen.blit(self.statics[i].getImage(), self.statics[i].getRect())
         for i in range(len(self.characters)):
             screen.blit(self.characters[i].getImg(), self.characters[i].getRect())
+        for i in range(len(self.ambient)):
+            self.ambient[i].display(screen)
