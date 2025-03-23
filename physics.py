@@ -14,7 +14,7 @@ class PhysicsEngine:
     def addCharacter(self, character: Character, coordinates: Tuple[int, int]) -> int:
         self.characters.append(character)
         self.characters[-1].rect.bottomleft = coordinates
-        return len(self.characters) - 1
+        return self.characters[-1]
         
     def setBackground(self, obj: StaticObject):
         self.background = obj
