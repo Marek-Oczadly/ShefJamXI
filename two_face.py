@@ -2,11 +2,9 @@ import pygame
 from character import Character
 
 class TwoFace(Character):
-    def __init__(self, player_name, max_hp, base_image):
-        super().__init__(player_name, max_hp, base_image)
 
-    def __init__(self, player_name, max_hp, base_image):
-        super().__init__(player_name, max_hp, base_image)
+    def __init__(self, player_name, max_hp, base_image, number):
+        super().__init__(player_name, max_hp, base_image, number)
         self.combos = {
             "combo1": [
                 (4, "graphics/two_face/blast/two_face_blast_1.png"),
