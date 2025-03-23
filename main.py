@@ -2,7 +2,7 @@ import pygame
 from sys import exit
 from cyborg import Cyborg
 from two_face import TwoFace
-from character import StaticObject, Bar
+from character import StaticObject, Bar, GameOver
 import physics
 
 class Main:
@@ -25,6 +25,9 @@ class Main:
         self.physicsEngine.addAmbient(Bar(lambda: player_1.getHealth() * 2, (30, 10), (200, 30)))
         self.physicsEngine.addAmbient(Bar(lambda: player_2.getHealth() * 2, (570, 10), (200, 30)))
         
+        player1_go = GameOver((0, 0), "graphics/game-over/player_2_wins.png")
+        player2_go = GameOver((0, 0), "graphics/game-over/player_1_wins.png")
+        
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -43,10 +46,14 @@ class Main:
             self.physicsEngine.update(keys)
             pygame.display.update()
             self.physicsEngine.blitAll(screen)
-            pygame.draw.rect(screen, "Green", player_1.rect, 2)
-            pygame.draw.rect(screen, "Green", player_2.rect, 2)
-            player_1.draw_attack_hitbox(screen)
-            player_2.draw_attack_hitbox(screen)
+            # pygame.draw.rect(screen, "Green", player_1.rect, 2)
+            # pygame.draw.rect(screen, "Green", player_2.rect, 2)
+            # player_1.draw_attack_hitbox(screen)
+            # player_2.draw_attack_hitbox(screen)
+            if (player_1.getHealth() == 0):
+                player1_go.display(screen)
+            elif (player_2.getHealth() == 0):
+                player2_go.display(screen)
 
             clock.tick(60)
 

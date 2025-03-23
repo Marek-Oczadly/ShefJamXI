@@ -223,3 +223,14 @@ class Bar:
         length: float = self.size_fn()
         pygame.draw.rect(screen, self.colours[0], (*self.coords, *self.maxdim))
         pygame.draw.rect(screen, self.colours[1], (*self.coords, length,self.maxdim[1]))
+        
+
+class GameOver(pygame.sprite.Sprite):
+    def __init__(self, coords: Tuple[int, int], path: Union[BinaryIO, str]):
+        self.image = pygame.image.load(path).convert()
+        self.rect = self.image.get_rect()
+        self.rect.topleft = coords
+    
+    def display(self, screen):
+        screen.blit(self.image, self.rect)
+        
