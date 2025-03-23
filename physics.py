@@ -8,15 +8,15 @@ class PhysicsEngine:
         self.gravity: float = (gravity * ppm) / (frame_rate * frame_rate)
         self.characters: List[character.Character] = []
         self.statics: List[character.StaticObject] = []
+        self.background : character.StaticObject = None
         
-    def init(self) -> None:
-        for i in range(len(self.statics)):
-            self.statics[i].init()
-        
-    def addCharacter(self, character: character.Character, coordinates: Tuple[int, int]) -> None:
+    def addCharacter(self, character: character.Character, coordinates: Tuple[int, int]) -> int:
         self.characters.append(character)
         self.characters[-1].rect.bottomleft = coordinates
+        return len(self.characters) - 1
         
+    def setBackground(self, obj: character.StaticObject):
+        self.background = obj
         
     def isOnFloor(self, character: character.Character) -> Tuple[bool, int]:
         for i in range(len(self.statics)):
@@ -51,6 +51,7 @@ class PhysicsEngine:
             self.characters[i].rect = self.characters[i].rect.move(self.characters[i].vel[0], self.characters[i].vel[1])
             
     def blitAll(self, screen: Surface) -> None:
+        screen.blit(self.background.getImage(), self.background.getRect())
         for i in range(len(self.statics)):
             screen.blit(self.statics[i].getImage(), self.statics[i].getRect())
         for i in range(len(self.characters)):
