@@ -53,6 +53,9 @@ class PhysicsEngine:
                     self.characters[i].acc[0] = 0
                     self.characters[i].vel[0] = 0
             self.characters[i].vel += self.characters[i].acc
+            if ((self.characters[i].rect.centerx <= 0 and self.characters[i].vel[0] < 0) or 
+                (self.characters[i].rect.centerx >= 800 and self.characters[i].vel[0] > 0)):
+                self.characters[i].vel[0] = 0
             self.characters[i].rect = self.characters[i].rect.move(self.characters[i].vel[0], self.characters[i].vel[1])
             
     def blitAll(self, screen: Surface) -> None:

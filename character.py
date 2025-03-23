@@ -11,8 +11,8 @@ class Character(pygame.sprite.Sprite):
         self.acc: np.ndarray = np.array([0., 0.])
         self.vel: np.ndarray = np.array([0., 0.])
 
-        self.image = pygame.transform.scale_by(pygame.image.load(base_image), 0.25)
-        self.rect = self.image.get_rect()
+        self.image: pygame.Surface = pygame.transform.scale_by(pygame.image.load(base_image), 0.25)
+        self.rect: pygame.Rect = self.image.get_rect()
         self.player_name: str = player_name
         self.hp: int = hp
         self.attacking: bool = False
@@ -27,10 +27,6 @@ class Character(pygame.sprite.Sprite):
         self.current_attack: str = ""
 
         self.last_hit_time = 0
-
-    # make it move, given array of keys
-    def move(self, direction):
-        self.rect = self.rect.move(direction, 0)
 
     # first combo, should be defined in subclass
     def combo1(self):
@@ -52,9 +48,9 @@ class Character(pygame.sprite.Sprite):
         self.attacking = False
 
         if self.player_name == "player1":
-            self.setRect("graphics/cyborg/cyborg_base.png")
+            self.setRect("graphics/cyborg/cyborg_left.png")
         elif self.player_name == "player2":
-            self.setRect("graphics/two_face/two_face_base.png")
+            self.setRect("graphics/cyborg/cyborg_left.png")
 
     def setRect(self, new_file: str):
         current_pos = self.rect.topleft  # Save the current position
@@ -63,6 +59,7 @@ class Character(pygame.sprite.Sprite):
             self.image = pygame.transform.scale_by(self.image, 0.25)
         if self.player_name == "player2":
             self.image = pygame.transform.scale_by(self.image, 0.25)
+            self.image = pygame.transform.flip(self.image, True, False)
         self.rect = self.image.get_rect()  # Get the new rect
         self.rect.topleft = current_pos  # Restore the original position
     
